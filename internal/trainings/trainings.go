@@ -24,17 +24,33 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("неверный формат данных: ожидается 3 части")
 	}
 
-	steps, err := strconv.Atoi(strings.TrimSpace(parts[0]))
+	stepsStr := strings.TrimSpace(parts[0])
+	if stepsStr == "" {
+		return errors.New("количество шагов не может быть пустым")
+	}
+
+	steps, err := strconv.Atoi(stepsStr)
 	if err != nil {
 		return fmt.Errorf("ошибка парсинга шагов: %v", err)
+	}
+	if steps <= 0 {
+		return errors.New("количество шагов должно быть положительным")
 	}
 	t.Steps = steps
 
 	t.TrainingType = strings.TrimSpace(parts[1])
 
-	duration, err := time.ParseDuration(strings.TrimSpace(parts[2]))
+	durationStr := strings.TrimSpace(parts[2])
+	if durationStr == "" {
+		return errors.New("продолжительность не может быть пустой")
+	}
+
+	duration, err := time.ParseDuration(durationStr)
 	if err != nil {
 		return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
+	}
+	if duration <= 0 {
+		return errors.New("продолжительность должна быть положительной")
 	}
 	t.Duration = duration
 
@@ -48,10 +64,10 @@ func (t Training) ActionInfo() (string, error) {
 	var calories float64
 	var err error
 
-	switch t.TrainingType {
-	case "Бег", "бег":
+	switch strings.ToLower(t.TrainingType) {
+	case "бег":
 		calories, err = spentenergy.RunningSpentCalories(t.Steps, t.Weight, t.Height, t.Duration)
-	case "Ходьба", "ходьба":
+	case "ходьба":
 		calories, err = spentenergy.WalkingSpentCalories(t.Steps, t.Weight, t.Height, t.Duration)
 	default:
 		return "", errors.New("неизвестный тип тренировки")
@@ -65,7 +81,7 @@ func (t Training) ActionInfo() (string, error) {
 	info += fmt.Sprintf("Длительность: %.2f ч.\n", t.Duration.Hours())
 	info += fmt.Sprintf("Дистанция: %.2f км.\n", distance)
 	info += fmt.Sprintf("Скорость: %.2f км/ч\n", speed)
-	info += fmt.Sprintf("Сожгли калорий: %.2f", calories)
+	info += fmt.Sprintf("Сожгли калорий: %.2f\n", calories)
 
 	return info, nil
 }
