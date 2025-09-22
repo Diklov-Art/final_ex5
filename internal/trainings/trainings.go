@@ -29,6 +29,10 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("количество шагов не может быть пустым")
 	}
 
+	if strings.ContainsAny(stepsStr, " \t\n") {
+		return errors.New("неверный формат шагов: пробелы не допускаются")
+	}
+
 	steps, err := strconv.Atoi(stepsStr)
 	if err != nil {
 		return fmt.Errorf("ошибка парсинга шагов: %v", err)
