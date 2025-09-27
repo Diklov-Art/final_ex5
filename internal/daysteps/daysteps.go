@@ -48,12 +48,26 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 		if strings.Count(durationStr, ":") == 2 {
 			timeParts := strings.Split(durationStr, ":")
 			if len(timeParts) == 3 {
-				hours, _ := strconv.Atoi(timeParts[0])
-				minutes, _ := strconv.Atoi(timeParts[1])
-				seconds, _ := strconv.Atoi(timeParts[2])
+				var hours, minutes, seconds int
+				if hours, err = strconv.Atoi(strings.TrimSpace(timeParts[0])); err != nil {
+					return fmt.Errorf("ошибка парсинга часов: %v", err)
+				}
+				if minutes, err = strconv.Atoi(strings.TrimSpace(timeParts[1])); err != nil {
+					return fmt.Errorf("ошибка парсинга минут: %v", err)
+				}
+				if seconds, err = strconv.Atoi(strings.TrimSpace(timeParts[2])); err != nil {
+					return fmt.Errorf("ошибка парсинга секунд: %v", err)
+				}
+
+				if hours < 0 || minutes < 0 || seconds < 0 {
+					return errors.New("время не может быть отрицательным")
+				}
+
 				duration = time.Duration(hours)*time.Hour +
 					time.Duration(minutes)*time.Minute +
 					time.Duration(seconds)*time.Second
+			} else {
+				return fmt.Errorf("неверный формат времени: ожидается HH:MM:SS")
 			}
 		} else {
 			return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
