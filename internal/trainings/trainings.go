@@ -53,15 +53,43 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("продолжительность не может быть пустой")
 	}
 
-	duration, err := time.ParseDuration(durationStr)
-	if err != nil {
-		return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
+	// Обработка формата времени HH:MM:SS
+	if strings.Count(durationStr, ":") == 2 {
+		timeParts := strings.Split(durationStr, ":")
+		if len(timeParts) == 3 {
+			var hours, minutes, seconds int
+			if hours, err = strconv.Atoi(strings.TrimSpace(timeParts[0])); err != nil {
+				return fmt.Errorf("ошибка парсинга часов: %v", err)
+			}
+			if minutes, err = strconv.Atoi(strings.TrimSpace(timeParts[1])); err != nil {
+				return fmt.Errorf("ошибка парсинга минут: %v", err)
+			}
+			if seconds, err = strconv.Atoi(strings.TrimSpace(timeParts[2])); err != nil {
+				return fmt.Errorf("ошибка парсинга секунд: %v", err)
+			}
+
+			if hours < 0 || minutes < 0 || seconds < 0 {
+				return errors.New("время не может быть отрицательным")
+			}
+
+			t.Duration = time.Duration(hours)*time.Hour +
+				time.Duration(minutes)*time.Minute +
+				time.Duration(seconds)*time.Second
+		} else {
+			return fmt.Errorf("неверный формат времени: ожидается HH:MM:SS")
+		}
+	} else {
+		//  парсинг продолжительности
+		duration, err := time.ParseDuration(durationStr)
+		if err != nil {
+			return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
+		}
+		t.Duration = duration
 	}
 
-	if duration <= 0 {
+	if t.Duration <= 0 {
 		return errors.New("продолжительность должна быть положительной")
 	}
-	t.Duration = duration
 
 	return nil
 }
