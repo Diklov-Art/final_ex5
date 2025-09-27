@@ -22,6 +22,6 @@ func Info(dataset []string, dp DataParser) {
 		}
 
 		fmt.Print(info)
-		fmt.Println("---")
+
 	}
 }

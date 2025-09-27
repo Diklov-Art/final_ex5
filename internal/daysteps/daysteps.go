@@ -44,8 +44,22 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 
 	duration, err := time.ParseDuration(durationStr)
 	if err != nil {
-		return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
+
+		if strings.Count(durationStr, ":") == 2 {
+			timeParts := strings.Split(durationStr, ":")
+			if len(timeParts) == 3 {
+				hours, _ := strconv.Atoi(timeParts[0])
+				minutes, _ := strconv.Atoi(timeParts[1])
+				seconds, _ := strconv.Atoi(timeParts[2])
+				duration = time.Duration(hours)*time.Hour +
+					time.Duration(minutes)*time.Minute +
+					time.Duration(seconds)*time.Second
+			}
+		} else {
+			return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
+		}
 	}
+
 	if duration <= 0 {
 		return errors.New("продолжительность должна быть положительной")
 	}
