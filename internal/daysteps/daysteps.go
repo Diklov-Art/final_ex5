@@ -28,6 +28,11 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 		return errors.New("количество шагов не может быть пустым")
 	}
 
+	// Проверка на пробелы внутри числа
+	if strings.Contains(stepsStr, " ") {
+		return errors.New("неверный формат шагов: пробелы не допускаются")
+	}
+
 	steps, err := strconv.Atoi(stepsStr)
 	if err != nil {
 		return fmt.Errorf("ошибка парсинга шагов: %v", err)
