@@ -6,8 +6,10 @@ import (
 )
 
 const (
-	stepLengthCoefficient = 0.725 // Исправленный коэффициент длины шага
-	mInKm                 = 1000.0
+	stepLengthCoefficient      = 0.65
+	mInKm                      = 1000.0
+	minInH                     = 60.0
+	walkingCaloriesCoefficient = 0.9
 )
 
 func Distance(steps int, height float64) float64 {
@@ -47,12 +49,10 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 		return 0, errors.New("продолжительность должна быть положительной")
 	}
 
-	distance := Distance(steps, height)
-	hours := duration.Hours()
+	meanSpeed := MeanSpeed(steps, height, duration)
+	durationInMinutes := duration.Minutes()
 
-	// Исправленная формула для бега (MET * вес * время)
-	met := 9.8 // MET для бега со скоростью ~8 км/ч
-	calories := met * weight * hours
+	calories := (weight * meanSpeed * durationInMinutes) / minInH
 
 	return calories, nil
 }
@@ -71,12 +71,11 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 		return 0, errors.New("продолжительность должна быть положительной")
 	}
 
-	distance := Distance(steps, height)
-	hours := duration.Hours()
+	meanSpeed := MeanSpeed(steps, height, duration)
+	durationInMinutes := duration.Minutes()
 
-	// Исправленная формула для ходьбы (MET * вес * время)
-	met := 4.0 // MET для быстрой ходьбы
-	calories := met * weight * hours
+	calories := (weight * meanSpeed * durationInMinutes) / minInH
+	calories *= walkingCaloriesCoefficient
 
 	return calories, nil
 }

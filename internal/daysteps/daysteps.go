@@ -18,24 +18,14 @@ type DaySteps struct {
 }
 
 func (ds *DaySteps) Parse(datastring string) (err error) {
-	// Удаляем все пробелы из строки перед обработкой
-	datastring = strings.ReplaceAll(datastring, " ", "")
-
 	parts := strings.Split(datastring, ",")
 	if len(parts) != 2 {
 		return errors.New("неверный формат данных: ожидается 2 части")
 	}
 
-	stepsStr := parts[0]
+	stepsStr := strings.TrimSpace(parts[0])
 	if stepsStr == "" {
 		return errors.New("количество шагов не может быть пустым")
-	}
-
-	// Проверка на нечисловые символы в шагах
-	for _, char := range stepsStr {
-		if char < '0' || char > '9' {
-			return errors.New("неверный формат шагов: должны быть только цифры")
-		}
 	}
 
 	steps, err := strconv.Atoi(stepsStr)
@@ -47,7 +37,7 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 	}
 	ds.Steps = steps
 
-	durationStr := parts[1]
+	durationStr := strings.TrimSpace(parts[1])
 	if durationStr == "" {
 		return errors.New("продолжительность не может быть пустой")
 	}
@@ -58,13 +48,13 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 			timeParts := strings.Split(durationStr, ":")
 			if len(timeParts) == 3 {
 				var hours, minutes, seconds int
-				if hours, err = strconv.Atoi(timeParts[0]); err != nil {
+				if hours, err = strconv.Atoi(strings.TrimSpace(timeParts[0])); err != nil {
 					return fmt.Errorf("ошибка парсинга часов: %v", err)
 				}
-				if minutes, err = strconv.Atoi(timeParts[1]); err != nil {
+				if minutes, err = strconv.Atoi(strings.TrimSpace(timeParts[1])); err != nil {
 					return fmt.Errorf("ошибка парсинга минут: %v", err)
 				}
-				if seconds, err = strconv.Atoi(timeParts[2]); err != nil {
+				if seconds, err = strconv.Atoi(strings.TrimSpace(timeParts[2])); err != nil {
 					return fmt.Errorf("ошибка парсинга секунд: %v", err)
 				}
 
