@@ -28,9 +28,11 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 		return errors.New("количество шагов не может быть пустым")
 	}
 
-	// Проверка на пробелы внутри числа
-	if strings.Contains(stepsStr, " ") {
-		return errors.New("неверный формат шагов: пробелы не допускаются")
+	// Проверка на наличие только цифр
+	for _, char := range stepsStr {
+		if char < '0' || char > '9' {
+			return errors.New("неверный формат шагов: должны быть только цифры")
+		}
 	}
 
 	steps, err := strconv.Atoi(stepsStr)
@@ -47,43 +49,16 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 		return errors.New("продолжительность не может быть пустой")
 	}
 
-	// Обработка формата времени HH:MM:SS
-	if strings.Count(durationStr, ":") == 2 {
-		timeParts := strings.Split(durationStr, ":")
-		if len(timeParts) == 3 {
-			var hours, minutes, seconds int
-			if hours, err = strconv.Atoi(strings.TrimSpace(timeParts[0])); err != nil {
-				return fmt.Errorf("ошибка парсинга часов: %v", err)
-			}
-			if minutes, err = strconv.Atoi(strings.TrimSpace(timeParts[1])); err != nil {
-				return fmt.Errorf("ошибка парсинга минут: %v", err)
-			}
-			if seconds, err = strconv.Atoi(strings.TrimSpace(timeParts[2])); err != nil {
-				return fmt.Errorf("ошибка парсинга секунд: %v", err)
-			}
-
-			if hours < 0 || minutes < 0 || seconds < 0 {
-				return errors.New("время не может быть отрицательным")
-			}
-
-			ds.Duration = time.Duration(hours)*time.Hour +
-				time.Duration(minutes)*time.Minute +
-				time.Duration(seconds)*time.Second
-		} else {
-			return fmt.Errorf("неверный формат времени: ожидается HH:MM:SS")
-		}
-	} else {
-		//  парсинг продолжительности
-		duration, err := time.ParseDuration(durationStr)
-		if err != nil {
-			return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
-		}
-		ds.Duration = duration
+	// Парсинг продолжительности в формате time.Duration
+	duration, err := time.ParseDuration(durationStr)
+	if err != nil {
+		return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
 	}
 
-	if ds.Duration <= 0 {
+	if duration <= 0 {
 		return errors.New("продолжительность должна быть положительной")
 	}
+	ds.Duration = duration
 
 	return nil
 }
