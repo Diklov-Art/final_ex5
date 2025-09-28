@@ -29,13 +29,12 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("количество шагов не может быть пустым")
 	}
 
-	trimmedSteps := strings.TrimSpace(stepsStr)
-	if trimmedSteps != stepsStr {
+	if strings.TrimSpace(stepsStr) != stepsStr {
 		return errors.New("неверный формат шагов: пробелы в начале или конце не допускаются")
 	}
 
 	hasNonDigit := false
-	for i, char := range trimmedSteps {
+	for i, char := range stepsStr {
 		if char == '+' || char == '-' {
 
 			if i != 0 {
@@ -52,7 +51,7 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("неверный формат шагов: должны быть только цифры, возможен знак в начале")
 	}
 
-	steps, err := strconv.Atoi(trimmedSteps)
+	steps, err := strconv.Atoi(stepsStr)
 	if err != nil {
 		return fmt.Errorf("ошибка парсинга шагов: %v", err)
 	}
@@ -66,8 +65,7 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("тип тренировки не может быть пустым")
 	}
 
-	trimmedTrainingType := strings.TrimSpace(trainingType)
-	if trimmedTrainingType != trainingType {
+	if strings.TrimSpace(trainingType) != trainingType {
 		return errors.New("неверный формат типа тренировки: пробелы в начале или конце не допускаются")
 	}
 	t.TrainingType = trainingType
@@ -77,8 +75,7 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("продолжительность не может быть пустой")
 	}
 
-	trimmedDuration := strings.TrimSpace(durationStr)
-	if trimmedDuration != durationStr {
+	if strings.TrimSpace(durationStr) != durationStr {
 		return errors.New("неверный формат продолжительности: пробелы в начале или конце не допускаются")
 	}
 
