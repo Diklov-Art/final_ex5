@@ -24,7 +24,7 @@ func (t *Training) Parse(datastring string) (err error) {
 		return errors.New("неверный формат данных: ожидается 3 части")
 	}
 
-	stepsStr := strings.TrimSpace(parts[0])
+	stepsStr := parts[0]
 	if stepsStr == "" {
 		return errors.New("количество шагов не может быть пустым")
 	}
@@ -36,7 +36,6 @@ func (t *Training) Parse(datastring string) (err error) {
 	hasNonDigit := false
 	for i, char := range stepsStr {
 		if char == '+' || char == '-' {
-
 			if i != 0 {
 				hasNonDigit = true
 				break
@@ -60,7 +59,7 @@ func (t *Training) Parse(datastring string) (err error) {
 	}
 	t.Steps = steps
 
-	trainingType := strings.TrimSpace(parts[1])
+	trainingType := parts[1]
 	if trainingType == "" {
 		return errors.New("тип тренировки не может быть пустым")
 	}
@@ -70,7 +69,7 @@ func (t *Training) Parse(datastring string) (err error) {
 	}
 	t.TrainingType = trainingType
 
-	durationStr := strings.TrimSpace(parts[2])
+	durationStr := parts[2]
 	if durationStr == "" {
 		return errors.New("продолжительность не может быть пустой")
 	}

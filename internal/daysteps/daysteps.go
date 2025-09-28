@@ -23,7 +23,7 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 		return errors.New("неверный формат данных: ожидается 2 части")
 	}
 
-	stepsStr := strings.TrimSpace(parts[0])
+	stepsStr := parts[0]
 	if stepsStr == "" {
 		return errors.New("количество шагов не может быть пустым")
 	}
@@ -59,15 +59,17 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 	}
 	ds.Steps = steps
 
-	durationStr := strings.TrimSpace(parts[1])
+	durationStr := parts[1]
 	if durationStr == "" {
 		return errors.New("продолжительность не может быть пустой")
 	}
 
+	// Проверка на пробелы в начале или конце продолжительности
 	if strings.TrimSpace(durationStr) != durationStr {
 		return errors.New("неверный формат продолжительности: пробелы в начале или конце не допускаются")
 	}
 
+	// Парсинг продолжительности в формате time.Duration
 	duration, err := time.ParseDuration(durationStr)
 	if err != nil {
 		return fmt.Errorf("ошибка парсинга продолжительности: %v", err)
