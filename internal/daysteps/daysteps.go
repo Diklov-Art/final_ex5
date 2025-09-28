@@ -28,14 +28,32 @@ func (ds *DaySteps) Parse(datastring string) (err error) {
 		return errors.New("количество шагов не может быть пустым")
 	}
 
-	// Проверка на наличие только цифр
-	for _, char := range stepsStr {
-		if char < '0' || char > '9' {
-			return errors.New("неверный формат шагов: должны быть только цифры")
+	// Проверка на пробелы внутри числа (не в начале/конце)
+	trimmedSteps := strings.TrimSpace(stepsStr)
+	if strings.Contains(trimmedSteps, " ") {
+		return errors.New("неверный формат шагов: пробелы внутри числа не допускаются")
+	}
+
+	// Проверка на наличие нецифровых символов (кроме возможного знака в начале)
+	hasNonDigit := false
+	for i, char := range trimmedSteps {
+		if char == '+' || char == '-' {
+			// Знак может быть только в начале
+			if i != 0 {
+				hasNonDigit = true
+				break
+			}
+		} else if char < '0' || char > '9' {
+			hasNonDigit = true
+			break
 		}
 	}
 
-	steps, err := strconv.Atoi(stepsStr)
+	if hasNonDigit {
+		return errors.New("неверный формат шагов: должны быть только цифры, возможен знак в начале")
+	}
+
+	steps, err := strconv.Atoi(trimmedSteps)
 	if err != nil {
 		return fmt.Errorf("ошибка парсинга шагов: %v", err)
 	}
